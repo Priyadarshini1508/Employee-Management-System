@@ -1,8 +1,15 @@
-import React, { useContext, useState, } from "react";
+import React, { useContext, useEffect, useState, } from "react";
 import { listContext } from "../App";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const AddEmp = () => {
-  const { employeeList, setEmployeeList } = useContext(listContext)
+  const { employeeList, setEmployeeList } = useContext(listContext);
+  const [isUpdate, setIsUpdateing] = useState(false);
+  const { state } = useLocation();
+  const navigate =useNavigate();
+
+
+  console.log("location",state);
 
   const [formValue, setFormValue] = useState({
     EmployeeName: "",
@@ -25,23 +32,37 @@ const AddEmp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setEmployeeList([...employeeList, formValue]);
-    setFormValue(
-      {
-    EmployeeName: "",
-    EmployeeId: "",
-    Designation: "",
-    Email: "",
-    Education: "",
-    Address: "",
-    Salary: "",
-    JoiningDate: "",
-    Performance: "Normal",
-      }
+    if (!isUpdate) {
+      setEmployeeList([...employeeList, formValue]);
+      setFormValue(
+        {
+          EmployeeName: "",
+          EmployeeId: "",
+          Designation: "",
+          Email: "",
+          Education: "",
+          Address: "",
+          Salary: "",
+          JoiningDate: "",
+          Performance: "Normal",
+        }
 
-    )
-   
+      )
+    }else{
+      const upDating = employeeList?.map((item, index)=>
+        { return index === state?.ind ?{...item, ...formValue}:item});
+      setEmployeeList(upDating);
+      setIsUpdateing(false)
+      navigate("/");
+       
+    }
   };
+  useEffect(() => {
+    if (state?.data) {
+      setIsUpdateing(true);
+      setFormValue({ ...state?.data  });
+    }
+  }, [state?.data]);
   console.log('employee-list', employeeList);
 
   return (
@@ -164,8 +185,8 @@ const AddEmp = () => {
                     <label htmlFor="" className="font-size-13">
                       PERFORMANCE
                     </label>
-                    <select className="form-input" name="Performance" onChange={handleChange} 
-                    value={formValue?.Performance}>
+                    <select className="form-input" name="Performance" onChange={handleChange}
+                      value={formValue?.Performance}>
                       <option value="Normal">Normal</option>
                       <option value="Avarage">Average</option>
                       <option value="Excellent">Excellent</option>

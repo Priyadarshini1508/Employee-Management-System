@@ -1,13 +1,25 @@
 import React, { useContext } from "react";
-import { NavLink } from 'react-router-dom';
+import { NavLink , useNavigate } from 'react-router-dom';
 import { listContext } from '../App';
 
 
 const ListEmp = () => {
 
   const { employeeList, setEmployeeList } = useContext(listContext);
+  const navigate = useNavigate()
 
+const handleView = (index) => {
+        navigate(`/view/${index+1}`);
+}
 
+const handleDelete=(ind)=>{
+const afterDelete = employeeList?.filter((_,index)=>index !==ind);
+setEmployeeList(afterDelete);
+}
+
+const handleUpdate=(emp,index)=>{
+  navigate("/add",{state:{data:emp, ind:index}});
+}
 
   return (
     <div className="container-fluid">
@@ -43,9 +55,9 @@ const ListEmp = () => {
                           <td className="text-center">{employe?.Designation}</td>
                           <td className="text-center">{employe?.Performance}</td>
                           <td className="text-center">
-                            <i className="fa-solid fa-eye pe-2 pointer text-primary"></i>
-                            <i className="fa-solid fa-pen-to-square pe-2 pointer tex-success"></i>
-                            <i className="fa-solid fa-trash pe-2 pointer text-danger"></i>
+                            <i className="fa-solid fa-eye pe-2 pointer text-primary" onClick={()=>handleView(index)}></i>
+                            <i className="fa-solid fa-pen-to-square pe-2 pointer tex-success" onClick={()=>handleUpdate(employe, index)}></i>
+                            <i className="fa-solid fa-trash pe-2 pointer text-danger"onClick={()=>handleDelete(index)}></i>
                           </td>
                         </tr>
                       );
@@ -62,5 +74,6 @@ const ListEmp = () => {
     </div>
   )
 }
+
 
 export default ListEmp;
